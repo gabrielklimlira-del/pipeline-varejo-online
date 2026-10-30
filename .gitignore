@@ -1,0 +1,15 @@
+# dado bruto e banco gerado: não vão para o GitHub (o README explica como obter e gerar)
+data/raw/*.xlsx
+data/*.db
+saidas/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+
+# editor
+.vscode/
+.idea/
