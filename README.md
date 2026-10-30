@@ -54,8 +54,8 @@ INDICADORES  mart_*
 Precisa de Python 3.10 ou mais novo.
 
 ```bash
-git clone https://github.com/SEU-USUARIO/NOME-DO-REPOSITORIO.git
-cd NOME-DO-REPOSITORIO
+git clone https://github.com/gabrielklimlira-del/pipeline-varejo-online.git
+cd pipeline-varejo-online
 
 python -m venv .venv
 source .venv/bin/activate          # no Windows: .venv\Scripts\activate
