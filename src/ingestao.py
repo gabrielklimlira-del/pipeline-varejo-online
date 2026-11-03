@@ -6,9 +6,11 @@ conversão de tipo aconteça antes da camada refinada.
 """
 import sqlite3
 import sys
+import logging
 from datetime import datetime
 
 import openpyxl
+logger = logging.getLogger(__name__)
 
 ABAS = {
     "Year 2009-2010": "raw_vendas_2009_2010",
@@ -69,6 +71,12 @@ def carregar(caminho_xlsx: str, caminho_db: str) -> dict:
 
 
 if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s | %(levelname)s | %(message)s",
+    )
+
     xlsx = sys.argv[1] if len(sys.argv) > 1 else "data/raw/online_retail_II.xlsx"
     db = sys.argv[2] if len(sys.argv) > 2 else "data/varejo.db"
-    print(carregar(xlsx, db))
+
+    logger.info("Resultado da ingestão: %s", carregar(xlsx, db))

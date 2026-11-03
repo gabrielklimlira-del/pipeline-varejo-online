@@ -2,10 +2,16 @@
 import argparse
 import sqlite3
 import time
+import logging
 from pathlib import Path
 
 from src.ingestao import carregar
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(message)s",
+)
 
+logger = logging.getLogger(__name__)
 RAIZ = Path(__file__).resolve().parent.parent
 PASTA_REFINADA = RAIZ / "sql" / "refined"
 PASTA_INDICADORES = RAIZ / "sql" / "marts"
@@ -38,12 +44,16 @@ def main():
 
     if not args.pular_ingestao:
         t = time.time()
-        print("bruta:", carregar(args.xlsx, args.db), f"({time.time() - t:.0f}s)")
+        logger.info(
+    "bruta: %s (%.0fs)",
+    carregar(args.xlsx, args.db),
+    time.time() - t,
+)
 
     con = sqlite3.connect(args.db)
     for pasta in (PASTA_REFINADA, PASTA_INDICADORES):
         for arquivo in executar_pasta(con, pasta):
-            print("ok:", pasta.name, arquivo)
+            logger.info("ok: %s %s", pasta.name, arquivo)
     con.close()
 
 

@@ -6,8 +6,9 @@ Servem para abrir em planilha ou em uma ferramenta de BI.
 import csv
 import sqlite3
 import sys
+import logging
 from pathlib import Path
-
+logger = logging.getLogger(__name__)
 RAIZ = Path(__file__).resolve().parent.parent
 
 
@@ -30,11 +31,16 @@ def exportar_indicadores(con: sqlite3.Connection, pasta_saida: Path) -> list:
 
 
 if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s | %(levelname)s | %(message)s",
+    )
+
     db = sys.argv[1] if len(sys.argv) > 1 else str(RAIZ / "data" / "varejo.db")
 
     con = sqlite3.connect(db)
     try:
         arquivos = exportar_indicadores(con, RAIZ / "saidas")
-        print(arquivos)
+        logger.info("Arquivos exportados: %s", arquivos)
     finally:
         con.close()
