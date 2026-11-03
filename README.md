@@ -103,5 +103,3 @@ A IA (Claude) participou de todas as etapas: leitura do arquivo, perfil de quali
 - **Assumiu sem eu pedir: duplicatas e banco.** Manteve as linhas duplicadas exatas, sem tirar nenhuma, e escolheu SQLite como banco. Medir o efeito das duplicatas (£57 mil, 0,3%) mostrou que a decisão é segura.
 - **Assumiu o formato dos testes.** O enunciado cita o "passo 4.6" do curso; a IA não viu esse passo e seguiu só o requisito (dado inventado, banco em memória). Por isso o estilo pode diferir do que o curso mostra.
 - **Quase passou:** a sobreposição entre as abas não estava nos requisitos nem na descrição do arquivo. Só apareceu ao comparar as datas de cada aba; sem tratar, 22.523 linhas seriam contadas duas vezes.
-
-<!-- Antes de publicar: rode os passos acima e acrescente aqui o que VOCÊ encontrou ao conferir (contagem de linhas antes e depois, totais por outro caminho). Apague os itens que não forem verdade para o seu processo. -->
