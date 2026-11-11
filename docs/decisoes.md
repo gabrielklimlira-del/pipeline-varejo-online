@@ -25,7 +25,7 @@ Conferência: 525.461 + 541.910 = 1.067.371 linhas, o mesmo total que a fonte in
 | 4 | Descrição sem espaços nas pontas; vazia vira `NULL`. | Há descrições como `' WHITE CHERRY LIGHTS'`. | 353 produtos ficam sem descrição, todos sem linha de venda com nome. |
 | 5 | Linha classificada em `venda`, `cancelamento`, `ajuste_contabil` ou `sem_preco`. Só venda e cancelamento viram receita. | Prefixo `C` = cancelamento; `A` = acerto de dívida (`Adjust bad debt`, ±£11 mil por linha); preço 0 = brinde ou acerto de estoque (3.457 linhas com quantidade negativa, preço 0, sem cliente, descrições como `short`). | 1.019.653 vendas, 19.165 cancelamentos, 6.024 sem preço, 6 ajustes. Nenhuma linha `outro`. |
 | 6 | Data da fatura = menor horário entre os itens. | 83 faturas têm itens lançados em minutos diferentes. | Cada fatura cai em um único mês. |
-| 7 | Faturas sem Customer ID são mantidas, com `cliente_id` vazio. | Cerca de 20% das linhas não têm cliente (107.927 na aba 1, 135.080 na aba 2). Descartá-las apagaria 20% da receita. | Contam na receita e não entram em indicadores por cliente. |
+| 7 | Faturas sem Customer ID são mantidas, com `cliente_id` vazio. | 229.327 de 1.038.818 linhas de venda e cancelamento (22,08%) não têm cliente identificado. | Contam na receita e não entram em indicadores por cliente. |
 | 8 | Tipo da fatura pelo prefixo (`C`, `A`, resto = venda). | Mesma regra dos itens. | Nenhum. |
 | 9 | Códigos de serviço, tarifa, frete, acerto, teste e vale-presente marcados com `eh_produto = 0`. | Somam valores enormes e não dizem o que o cliente comprou (`AMAZONFEE` sozinho tem −£260 mil). Lista explícita na tabela `ref_codigos_nao_produto`. Os códigos `DCGS...`, `PADS` e `SP1002` têm nome de produto e ficam. | Ver limitação L1. |
 | 10 | Descrição do produto = a mais usada em linhas de venda (desempate: mais usada no total, depois ordem alfabética). | 1.210 códigos têm mais de uma descrição (`short`, `mixed`, `ebay`, erros de digitação). | Resultado sempre o mesmo. |
@@ -44,8 +44,8 @@ Conferência: 525.461 + 541.910 = 1.067.371 linhas, o mesmo total que a fonte in
 
 ## Limitações conhecidas
 
-- **L1 - lançamentos manuais (código `M`).** Ficam fora dos indicadores, mas 535 deles são cancelamentos (−£422.565,51), e alguns cancelam vendas de produtos reais (ex.: `C556445`, −£38.970, cancela 60 unidades do produto `22502`). A receita líquida pode estar superestimada em até £422 mil, cerca de 2,2% dos £18,98 milhões.
-- **L2 - duplicatas exatas mantidas.** 11.001 grupos (11.812 linhas extras) valem £57.092,82, cerca de 0,3% da receita bruta.
+- **L1 - lançamentos manuais (código `M`).** Classificados como não produtos e excluídos dos indicadores. Apresentam saldo líquido de -£82.935,57, equivalente a aproximadamente 0,44% da receita líquida apresentada. A exclusão desses lançamentos faz com que a receita líquida dos indicadores fique maior nesse valor.
+- **L2 - duplicatas exatas mantidas.** Foram identificados 11.001 grupos de duplicatas, totalizando 11.812 linhas extras. O valor líquido dessas linhas é de £54.228,42; considerando os valores absolutos, o montante é de £60.734,52. O valor líquido representa aproximadamente 0,28% da receita bruta. As duplicatas foram mantidas porque não é possível distinguir, com segurança, uma duplicação indevida de uma compra legítima de itens idênticos na mesma fatura.
 - **L3 - picos de dez/2011 e jan/2011.** Os cancelamentos de 28% e 14% nesses meses vêm das duas encomendas da decisão 16. A receita bruta e o ticket médio desses meses ficam inflados; a líquida não muda.
 - **L4 - dez/2009 em `clientes novos`.** O dado começa nesse mês, então todo cliente dele aparece como novo, mesmo os que já compravam antes.
-- **L5 - clientes anônimos.** Clientes identificados respondem por 86,5% da receita líquida; os RFM e a análise de recorrência não enxergam o resto.
+- **L5 - clientes anônimos.** Clientes identificados respondem por 86,46% da receita líquida. Os indicadores RFM e a análise de recorrência consideram apenas esses clientes.

@@ -88,18 +88,24 @@ Receita líquida total: **£18,98 milhões** (bruta £19,70 milhões, cancelamen
 
 Resumo das decisões que mais mexem nos números; todas estão em [`docs/decisoes.md`](docs/decisoes.md).
 
-- As duas abas **se sobrepõem** em 01 a 09/12/2010 (22.523 linhas idênticas). A refinada mantém uma cópia. `mart_conferencia_linhas` mostra 1.067.371 linhas brutas, 22.523 removidas e 1.044.848 na refinada, com diferença 0.
-- Frete, tarifas, acertos e vales-presente **não são produto** e ficam fora dos indicadores.
-- Cerca de 20% das linhas **não têm cliente**: entram na receita, mas não nos indicadores por cliente.
-- Duas encomendas gigantes (£168 mil e £77 mil) foram **canceladas no mesmo dia**. A receita líquida não muda, mas a bruta e o ticket médio de dez/2011 e jan/2011 ficam inflados.
-- Limitações em aberto: lançamentos manuais (código `M`) podem fazer a receita líquida ficar até 2,2% acima do real; linhas duplicadas exatas (0,3% da bruta) foram mantidas.
+- **Sobreposição entre abas:** as duas abas se sobrepõem em 01 a 09/12/2010 (22.523 linhas idênticas). A camada refinada mantém apenas uma cópia. A tabela `mart_conferencia_linhas` mostra 1.067.371 linhas brutas, 22.523 removidas e 1.044.848 na refinada, com diferença 0.
+- **Classificação de não produtos:** frete, tarifas, descontos, amostras, lançamentos manuais, testes, acertos e vales-presente são classificados como não produtos (`eh_produto = 0`), conforme as regras da camada refinada.
+- **Clientes não identificados:** 22,08% das linhas de venda e cancelamento (229.327 de 1.038.818) não possuem identificação de cliente. Essas linhas entram nos indicadores de receita, mas ficam fora dos indicadores por cliente, como RFM e clientes novos e recorrentes. Apesar disso, os clientes identificados representam 86,46% da receita líquida (£16.411.894,75 de £18.981.261,52).
+- **Cancelamentos de alto valor:** duas faturas de cancelamento concentram valores expressivos: £77.183,60 em janeiro/2011 e £168.469,60 em dezembro/2011. Como os cancelamentos são contabilizados no mês de emissão, e não vinculados à fatura original, a receita bruta e o ticket médio não são ajustados retroativamente. Isso exige cautela na interpretação dos indicadores desses períodos.
+- **Limitações em aberto:** lançamentos manuais (código `M`) foram classificados como não produtos. Seu saldo líquido é de -£82.935,57, equivalente a aproximadamente 0,44% da receita líquida apresentada. Linhas duplicadas exatas, que representam 0,28% da receita bruta, foram mantidas.
 
-## A IA neste projeto
+## Uso de Inteligência Artificial e validação técnica
 
-A IA (Claude) participou de todas as etapas: leitura do arquivo, perfil de qualidade, SQL, testes e documentação. As conferências foram feitas contando linhas antes e depois de cada etapa (`mart_conferencia_linhas`) e comparando os totais com um cálculo independente em pandas, direto das tabelas brutas.
+Durante o desenvolvimento deste projeto, utilizei o Claude como ferramenta de apoio em diferentes etapas, incluindo organização do código, construção de consultas SQL, elaboração de testes e documentação.
 
-- **Erro de teste (RFM).** O teste de recência foi escrito com o valor esperado errado (1 dia em vez de 2): a IA esqueceu que a data de referência vem da última fatura do dado, que era um cancelamento. O teste falhou ao rodar e o SQL estava certo, então a correção foi no teste.
-- **Assumiu sem eu pedir: o que não é produto.** A IA escolheu a lista de códigos tratados como frete, tarifa e acerto. Ao listar os 61 códigos que não começam com 5 dígitos, com contagem e valor, apareceu que o código `M` inclui cancelamentos de vendas reais (−£422 mil), o que virou a limitação L1.
-- **Assumiu sem eu pedir: duplicatas e banco.** Manteve as linhas duplicadas exatas, sem tirar nenhuma, e escolheu SQLite como banco. Medir o efeito das duplicatas (£57 mil, 0,3%) mostrou que a decisão é segura.
-- **Assumiu o formato dos testes.** O enunciado cita o "passo 4.6" do curso; a IA não viu esse passo e seguiu só o requisito (dado inventado, banco em memória). Por isso o estilo pode diferir do que o curso mostra.
-- **Quase passou:** a sobreposição entre as abas não estava nos requisitos nem na descrição do arquivo. Só apareceu ao comparar as datas de cada aba; sem tratar, 22.523 linhas seriam contadas duas vezes.
+As sugestões geradas pela IA não foram consideradas automaticamente corretas. As implementações passaram por execução, testes e conferências independentes, com o objetivo de verificar a consistência dos resultados.
+
+Alguns pontos importantes identificados durante o desenvolvimento:
+
+- **Validação dos indicadores RFM:** um teste apresentou resultado divergente porque a data de referência considerava a última fatura do conjunto de dados, que correspondia a um cancelamento. Após a execução do teste, identifiquei que o erro estava no valor esperado do teste, não na consulta SQL.
+- **Identificação de códigos não convencionais:** a análise de códigos de produtos revelou que o código `M` também abrangia cancelamentos de vendas reais. Considerando vendas e cancelamentos, o saldo líquido desses lançamentos é de -£82.935,57. A exclusão do código dos indicadores aumenta a receita líquida apresentada nesse mesmo valor, uma limitação documentada na análise.
+- **Tratamento de duplicidades:** as linhas exatamente duplicadas foram mantidas. Foram identificados 11.001 grupos, totalizando 11.812 linhas extras. O valor líquido dessas linhas é de £54.228,42 e o valor absoluto é de £60.734,52, equivalente a aproximadamente 0,28% da receita bruta.
+- **Sobreposição entre as abas:** a comparação dos períodos das duas planilhas identificou 22.523 registros sobrepostos. Essa análise evitou a contagem duplicada de registros na consolidação da base.
+- **Testes automatizados:** os testes foram desenvolvidos com dados fictícios, sem necessidade de acessar o banco de dados, e executados para validar as regras implementadas.
+
+**Princípio adotado:** utilizar IA como ferramenta de produtividade, mantendo a responsabilidade pela execução, conferência e validação dos resultados.
